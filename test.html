@@ -3,11 +3,19 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>repl.it</title>
-   
+    <title>proj3</title>
+   <style>
+      
+       #c1 {
+           
+         background-color: silver;   
+       }
+      
+      </style>
   </head>
   <body>
-    <canvas id="c1" height="400" width="600">
+    <canvas id="c1" height="400" width="600"> 
+      
        </canvas>
 
        <!-- <img id="image1" src="https://static.getjar.com/icon-50x50/1d/611737_thm.png">  -->
@@ -16,88 +24,124 @@
       let c = document.querySelector("#c1");
       let ctx = c.getContext("2d");
         
-      let player = {x:100, y:100, playerImg};
-      var playerImg = new Image();
-      playerImg.src="https://static.getjar.com/icon-50x50/1d/611737_thm.png"
+      //let player = {x:100, y:c.height-50};
+      let player = {x:100, y:c.height-50, radius:10};
+
+      // var playerImg = new Image();
+      // playerImg.src="https://static.getjar.com/icon-50x50/1d/611737_thm.png"
 
       let game = {score: 0,lives: 3};
-      var harm = {x:0,y:0}
-      var benefit= {x:0,y:0}  
+      let harm = {x:50,y:0, radius:10};
+      let benefit= {x:190,y:0, radius:10};  
       
-      let sq = {w: 100 , h:100}; //the height and width of player
+      let sq = {w: 20 , h:20}; //the height and width of player
       let sqObj = {w: 50 , h:50}; //height and width of benefit and harm
 
 
-        ctx.rect(player["x"],player["y"],sq["w"],sq["h"]);
         
-        ctx.rect(harm["x"],harm["y"],sqObj["w"],sqObj["h"]);
-
+        document.addEventListener("keydown", (e) => {;
         
-        ctx.stroke();
-        //moving the onj harm, move this format
-            function move(h){
 
-                c.height=c.height;
-                ctx.beginPath();
-                for(let i; i<200; i++){
-                harm["y"] -= 1 ;
-                ctx.rect(harm["x"],harm["y"],sqObj["w"],sqObj["h"]);
-              ctx.stroke();
-          
-              window.requestAnimationFrame(move());
-                }
-
-              
-            }
-     
-
-          // update values
-           harm["y"] += 1;
+            if (e.keyCode == 39){
+             player["x"]=player["x"]+30; 
             
-            function move(e){
-              if (e.keyCode == 39){
-                player["x"]=player["x"]+30; 
 
-                if (player["x"] > c.width){
-                  player["x"] = 0 - sq["w"]; //
-                }
+              if (player["x"] > c.width){
+                player["x"] = 0 - sq["w"]; //
+              }
               }
 
-              if (e.keyCode == 37){
-                player["x"]=player["x"]-30;
+            if (e.keyCode == 37){
+             player["x"]=player["x"]-30;
 
                 if (player["x"] < 0-sq["w"]){
                   player["x"] = c.width; //
-                }
-
               }
 
-              if (e.keyCode == 38){
-                player["y"]=player["y"]-30;
-
               }
+                                                     
+//              if (e.keyCode == 38){
+//                 player["y"]=player["y"]-30;
+                 
+//                 if (player["y"] > c.width){
+//                 player["y"] = 0 - sq["w"]; //
+//               }
 
-              if (e.keyCode == 40){
-                player["y"]=player["y"]+30;
+//               }
 
-              }
-            
-            c.width=c.width;
-            ctx.beginPath();
-            ctx.rect(player["x"],player["y"],100,100);
-            ctx.rect(harm["x"],harm["y"]+1,sqObj["w"],sqObj["h"]);
-            ctx.closePath();
-            ctx.stroke();
-            window.requestAnimationFrame(move());
+//               if (e.keyCode == 40){
+//                 player["y"]=player["y"]+30;
 
+//               }                                        
+              
+              //console.log(player) 
+              })                                                            
 
-            }
-            document.onkeydown=move;
-            
         
 
-           
+      let draw = () => {
+      // clear
+      ctx.clearRect (0,0, c.width, c.height);
 
+      // update values
+      harm["y"] += 1;
+      benefit["y"] +=1;
+
+      // handle edge condition
+      if (harm["y"] > c.width + harm["radius"]) {
+        harm["y"] = -harm["radius"];
+      }
+          
+      // handle edge condition
+      if (benefit["y"] > c.width + benefit["radius"]) {
+        benefit["y"] = -benefit["radius"];
+      }
+      
+          
+      // Handle the player v harm collision
+      let dxPh = player.x - harm.x;
+      let dyPh = player.y - harm.y; 
+      let distH = Math.sqrt( dxPh * dxPh + dyPh * dyPh);
+      
+      if (distH < player.radius + harm.radius) {
+          //collision detected
+          console.log(distH)
+          game["lives"] = game["lives"] - 1; 
+      }
+    
+
+
+
+
+      // draw
+      ctx.beginPath();
+      ctx.arc(harm["x"],harm["y"],harm["radius"],0, Math.PI*2);
+      ctx.closePath();
+      ctx.fillStyle = "red";
+      ctx.fill();
+          
+          
+      ctx.beginPath();
+      ctx.arc(benefit["x"],benefit["y"],harm["radius"],0, Math.PI*2);
+      ctx.closePath();
+      ctx.fillStyle = "green";
+      ctx.fill();
+          
+      ctx.beginPath();
+      //ctx.arc(player["x"],player["y"],sq["w"],sq["h"]);
+      ctx.arc(player["x"],player["y"],player["radius"],0,Math.PI*2);
+      ctx.closePath();
+      ctx.fillStyle = "blue";
+    
+      ctx.fill();
+
+
+      ctx.fillText("Lives: " + game["lives"], 25,25)
+      // repeat
+      window.requestAnimationFrame(draw);
+    }
+
+      draw();
 
     </script>
   </body>
